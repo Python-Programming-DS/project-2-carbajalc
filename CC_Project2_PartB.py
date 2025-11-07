@@ -1,27 +1,48 @@
-   # Uses trained model to get the best position on current board
-    def MLturn(self, board, best_nn):
+# minmax algorithm (optional for player)
+    def min_max_move(self, board, turn): # making sure not to mess with self.board and self.turn
+        if self.checkWin() and turn == 'X':
+            return 1, None
+        if self.checkWin() and turn == 'O':
+            return -1, None
+        if self.checkFull():
+            return 0, None
+
+        # Need to see all available moves
+        all_moves = []
         board = self.board.board
-        new_board = [[]] # need the correct shape for model
+        turn = self.turn
 
-        # Converting board into 1, -1 and 0 format
         for i in range(len(board)):
-            for j in range(len(board[0])):
-                if board[i][j] == "X":
-                    new_board[0].append(1)
-                elif board[i][j] == "O":
-                    new_board[0].append(-1)
-                else:
-                    new_board[0].append(0)
-        new_board = pd.DataFrame(new_board)
+            for j in range(len(board)):
+                if board[i][j] == " ":
+                    all_moves.append([i, j])
+        
+        if turn == 'X': # X is maxmimizer
+            best_score = -float('inf') # starting off with lowest score
+            best_move = None
 
-        best_pos = int(best_nn.predict(new_board)[0])
+            for i,j in all_moves: # Going through all available moves
+                board[i][j] = 'X' # trying each move
+                score, _ = self.min_max_move(board, 'O') # getting best move for O
+                board[i][j] = ' ' # clearning up move
+                if score > best_score: # if we get a better score with the move
+                    best_score = score
+                    best_move = [i, j]
+            return best_score, best_move # returning best score and move after all recursions
+        
+        else: # O is the minimizer, repeated code above but just for O
+            best_score = -float('inf')
+            best_move = None
 
-        if best_pos < 3:
-            return [0, best_pos]
-        elif best_pos < 6:
-            return [1, best_pos - 3]
-        else:
-            return [2, best_pos - 6]
+            for i,j in all_moves:
+                board[i][j] = 'X'
+                score, _ = self.min_max_move(board, 'X') # best move for X instead
+                board[i][j] = ' '
+                if score < best_score: # we're minimizing, so best move with lower score
+                    best_score = score
+                    best_move = [i, j]
+            return best_score, best_move
+
 
     # plays computer game using minmax algorithm
     def playCompGame(self):
