@@ -4,4 +4,7 @@ This is an **individual assignment**.
 
 **Due: Sunday, 11/9/2025 @ 11:59PM**
 
+Comment: All code is implemented in Part A. Part B and C only shows the functions I've created to put into Part A. The model I used also takes a while (around 5-10 minutes)
+to build and train. Once done, the user can play the game against the model.
+
 
